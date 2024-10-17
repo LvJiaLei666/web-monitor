@@ -8,6 +8,7 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
+    "semi": ["error", "never"],
     "prettier/prettier": "error",
     "no-useless-escape": "off",
     "@typescript-eslint/interface-name-prefix": "off",

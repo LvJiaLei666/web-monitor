@@ -1,4 +1,4 @@
-import { EventBus } from '../lib/eventBus';
+import { EventBus } from '../lib/eventBus'
 
 /**
  * 事件类型
@@ -23,5 +23,5 @@ export enum EVENTTYPES {
 }
 
 export type JsMonitor = {
-  eventBus: EventBus;
-};
+  eventBus: EventBus
+}
