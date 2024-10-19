@@ -1,16 +1,16 @@
 import { EVENTTYPES } from '../constant'
-import { AnyFn } from '../types'
+import { AnyFun } from '../types'
 import { _support } from '../utils/global'
 
 type Events = {
-  [key in EVENTTYPES]?: AnyFn[]
+  [key in EVENTTYPES]?: AnyFun[]
 }
 
 export class EventBus {
   private readonly events: Events = {}
 
   // 订阅
-  on(eventName: EVENTTYPES, handler: AnyFn): void {
+  on(eventName: EVENTTYPES, handler: AnyFun): void {
     const callbacks = this.events[eventName] ?? (this.events[eventName] = [])
     if (!this.hasHandler(callbacks, handler)) {
       callbacks.push(handler)
@@ -18,7 +18,7 @@ export class EventBus {
   }
 
   // 移除订阅
-  off(eventName: EVENTTYPES, handler: AnyFn): void {
+  off(eventName: EVENTTYPES, handler: AnyFun): void {
     const callbacks = this.events[eventName]
     if (!callbacks) return
 
@@ -36,12 +36,12 @@ export class EventBus {
   }
 
   // 获取回调函数的索引
-  private getCallbackIndex(callbacks: AnyFn[], handler: AnyFn): number {
+  private getCallbackIndex(callbacks: AnyFun[], handler: AnyFun): number {
     return callbacks.findIndex(fn => fn === handler)
   }
 
   // 检查回调函数是否已经存在
-  private hasHandler(callbacks: AnyFn[], handler: AnyFn): boolean {
+  private hasHandler(callbacks: AnyFun[], handler: AnyFun): boolean {
     return this.getCallbackIndex(callbacks, handler) !== -1
   }
 }

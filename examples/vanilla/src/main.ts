@@ -1,7 +1,7 @@
 import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
-import {init} from '@js-monitor/core'
+import { init } from '@js-monitor/core'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -32,15 +32,17 @@ init()
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 
 function triggerError() {
-    throw new Error('Something went wrong')
-    // const a = ''
-    // console.log('¬∆¬ triggerError',a.b.c)
+  throw new Error('Something went wrong')
+  // const a = ''
+  // console.log('¬∆¬ triggerError',a.b.c)
 }
 
 function triggerPromiseError() {
-    return Promise.reject('Something went wrong')
+  return Promise.reject('Something went wrong')
 }
 
 document.querySelector<HTMLButtonElement>('#error')!.addEventListener('click', triggerError)
 
-document.querySelector<HTMLButtonElement>('#promise-error')!.addEventListener('click', triggerPromiseError)
+document
+  .querySelector<HTMLButtonElement>('#promise-error')!
+  .addEventListener('click', triggerPromiseError)
