@@ -1,11 +1,14 @@
-import { addListener } from '../utils'
 import { EVENTTYPES } from '../constant'
 import { eventBus } from './eventBus'
 
 function initError() {
   console.log('initError')
-  addListener(window, EVENTTYPES.ERROR, err => {
-    eventBus.emit(EVENTTYPES.ERROR, err)
+  eventBus.on(EVENTTYPES.ERROR, (err: ErrorEvent) => {
+    console.log(`¬∆¬ ${EVENTTYPES.ERROR}`, err)
+  })
+
+  eventBus.on(EVENTTYPES.UNHANDLEDREJECTION, (err: PromiseRejectionEvent) => {
+    console.log(`¬∆¬ ${EVENTTYPES.UNHANDLEDREJECTION}`, err)
   })
 }
 
