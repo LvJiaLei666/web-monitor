@@ -1,4 +1,5 @@
 import { EventBus } from '../lib/eventBus'
+import { InitOptions } from '../types/options'
 
 /**
  * 事件类型
@@ -24,4 +25,7 @@ export enum EVENTTYPES {
 
 export type JsMonitor = {
   eventBus: EventBus
+  options: InitOptions
+  // 已经重写或监听的参数
+  needMountEvent: EVENTTYPES[]
 }

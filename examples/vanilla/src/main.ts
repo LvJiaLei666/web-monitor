@@ -40,7 +40,10 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-init()
+init({
+  reportUrl: 'http://localhost:3000',
+  apiKey: 'vanilla',
+})
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 

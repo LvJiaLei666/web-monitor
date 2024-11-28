@@ -28,5 +28,10 @@
     "**/dist",
     "packages/.test",
     "packages/_docs"
-  ]
+  ],
+  "baseUrl": "./",
+  "paths": {
+    "*": ["src/*", "node_modules/*"],
+    "@js-monitor/*":["packages/"],
+  }
 }

@@ -1,12 +1,11 @@
 import { EVENTTYPES } from '../constant'
 import { addListener, getTimestamp, isInObject, replaceAop, throttle } from '../utils'
 import { eventBus } from './eventBus'
-import { _global } from '../utils/global'
+import { _global, _support } from '../utils/global'
 import { VoidFun } from '../types'
 
 function initListenerAndReplace() {
-  console.log('initListenerAndReplace')
-  for (const key in EVENTTYPES) {
+  for (const key of _support.needMountEvent) {
     if (isInObject(key, EVENTTYPES)) {
       replace(EVENTTYPES[key])
     }
