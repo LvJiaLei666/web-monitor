@@ -1,27 +1,41 @@
-import { initError } from './src/lib/err'
-import { initListenerAndReplace } from './src/lib/replace'
 import { InitOptions } from './src/types/options'
-import { initOptions } from './src/lib/init'
-import { isEmpty } from './src/utils/is'
-import { logError } from './src/utils/log'
+import { EventBus } from './src/lib/eventBus'
+import { ErrorMonitor } from './src/monitor/error'
 
-function init(options: InitOptions) {
-  // 处理入口配置 挂载全局变量 挂载eventBus
-  console.log('init')
+export class Monitor {
+  // 参数
+  private options: InitOptions
+  private plugins
+  private errorMonitor: ErrorMonitor
+  private performanceMonitor
+  private behaviorMonitor
+  private reporter
 
-  if (!options || isEmpty(options)) {
-    logError('请输入正确的配置项')
-    return
+  eventBus: EventBus = new EventBus()
+  constructor(options: InitOptions) {
+    this.options = options
+    this.errorMonitor = new ErrorMonitor(this.eventBus)
   }
 
-  if (!options.apiKey || !options.reportUrl) {
-    logError(`${!options.apiKey ? 'apiKey' : 'reportUrl'}为空，请输入正确的配置项`)
-    return
+  init() {
+    this.initError()
+    this.initBehavior()
+    this.initPerformance()
   }
 
-  initOptions(options)
-  initListenerAndReplace()
-  initError()
+  private initError() {
+    if (this.options.enableError) {
+      this.errorMonitor.init()
+    }
+  }
+
+  private initPerformance() {
+    if (this.options.enablePerformance) {
+    }
+  }
+
+  private initBehavior() {
+    if (this.options.enableBehavior) {
+    }
+  }
 }
-
-export { init }

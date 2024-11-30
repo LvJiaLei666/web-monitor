@@ -1,10 +1,12 @@
 import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
-import { init } from '@js-monitor/core'
 import request from './request.ts'
+import { Monitor } from '@js-monitor/core'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+<img src="https://test.cn/×××.png">
+
   <div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="${viteLogo}" class="logo" alt="Vite logo" />
@@ -21,6 +23,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
     <div class="error">
         <button id="promise-error" type="button">promise错误</button>
+    </div>
+    <div class="error">
+        <button id="resource-error" type="button">资源错误错误</button>
     </div>
     <div class="error">
         <button id="push-state" type="button">push-state</button>
@@ -40,10 +45,14 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-init({
-  reportUrl: 'http://localhost:3000',
-  apiKey: 'vanilla',
+const monitor = new Monitor({
+  reportUrl: 'https://test.cn',
+  enableBehavior: true,
+  enablePerformance: true,
+  enableError: true,
 })
+
+monitor.init()
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 
@@ -55,6 +64,22 @@ function triggerError() {
 
 function triggerPromiseError() {
   return Promise.reject('Something went wrong')
+}
+
+window.addEventListener(
+  'error',
+  e => {
+    console.log('¬∆¬ window.addEventListener', e)
+    if (e.target instanceof HTMLImageElement) {
+      console.log('¬∆¬ ')
+    }
+  },
+  true
+)
+
+function triggerResourceError() {
+  const image = new Image()
+  image.src = 'https://www.xybsyw.com/vite1.svg'
 }
 
 function pushState() {
@@ -84,6 +109,9 @@ document.querySelector<HTMLButtonElement>('#error')!.addEventListener('click', t
 document
   .querySelector<HTMLButtonElement>('#promise-error')!
   .addEventListener('click', triggerPromiseError)
+document
+  .querySelector<HTMLButtonElement>('#resource-error')!
+  .addEventListener('click', triggerResourceError)
 
 document.querySelector<HTMLButtonElement>('#push-state')!.addEventListener('click', pushState)
 
