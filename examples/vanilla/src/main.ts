@@ -2,7 +2,7 @@ import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
 import request from './request.ts'
-import { Monitor } from '@js-monitor/core'
+import { Monitor } from '@js-monitor/core/src/lib'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <img src="https://test.cn/×××.png">
