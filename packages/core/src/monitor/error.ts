@@ -81,5 +81,7 @@ export class ErrorMonitor {
   }
 
   // 监听请求错误
-  initHttpError() {}
+  reportHttpError(data: Partial<ErrorEventData>) {
+    this.eventBus.emit(EVENTTYPES.ERROR, this.createErrorEvent(ERROR_TYPES.HTTP_ERROR, data))
+  }
 }

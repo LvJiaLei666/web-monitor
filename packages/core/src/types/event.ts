@@ -12,6 +12,15 @@ export enum ERROR_TYPES {
   UNKNOWN_ERROR = 'unknown_error',
 }
 
+export enum BEHAVIOR_TYPES {
+  CLICK = 'click',
+  HASHCHANGE = 'hashchange',
+  POPSTATE = 'popstate',
+  ONLINE = 'online',
+  OFFLINE = 'offline',
+  HTTP_REQUEST = 'http_request',
+}
+
 export interface EventBase {
   type: string
   timestamp: number
@@ -32,3 +41,18 @@ export interface ErrorEventData extends EventBase {
   response?: string
   method?: string
 }
+
+export interface BehaviorEventData extends EventBase {
+  type: BEHAVIOR_TYPES
+  path?: string
+  from?: string
+  to?: string
+  method?: string
+  url?: string
+  status?: number
+  duration?: number
+  requestSize?: number
+  responseSize?: number
+}
+
+export type MonitorEventData = ErrorEventData | BehaviorEventData

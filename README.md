@@ -38,6 +38,7 @@ const monitor = new Monitor({
   sampleRate: 1
 })
 
+// 初始化
 monitor.init()
 ```
 
