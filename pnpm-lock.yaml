@@ -38,7 +38,7 @@ importers:
 
   examples/vanilla:
     dependencies:
-      '@js-monitor/core':
+      '@web-monitor/core':
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:

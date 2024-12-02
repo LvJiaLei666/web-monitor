@@ -19,6 +19,7 @@ export enum BEHAVIOR_TYPES {
   ONLINE = 'online',
   OFFLINE = 'offline',
   HTTP_REQUEST = 'http_request',
+  BEFOREUNLOAD = 'beforeunload',
 }
 
 export interface EventBase {
@@ -61,6 +62,8 @@ export interface BehaviorEventData extends EventBase {
   // 坐标
   clientX?: number
   clientY?: number
+  // 总计停留时长
+  stayDuration?: number
 }
 
 export type MonitorEventData = ErrorEventData | BehaviorEventData

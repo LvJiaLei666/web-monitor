@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@js-monitor/core": "workspace:*"
+    "@web-monitor/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.5.3",

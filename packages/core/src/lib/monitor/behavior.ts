@@ -4,11 +4,16 @@ import { BEHAVIOR_TYPES, BehaviorEventData, EVENTTYPES } from '../../types/event
 export class BehaviorMonitor {
   constructor(private eventBus: EventBus) {}
 
+  // 累计时长
+  private duration = 0
+  // 开始时间
+  private startTime = 0
+
   init() {
+    this.initTime()
     this.initClick()
     this.initPopstate()
     this.initHashchange()
-    this.initLoad()
     this.initBeforeunload()
     this.initNetworkStatus()
   }
@@ -27,7 +32,7 @@ export class BehaviorMonitor {
   }
 
   private emitBehaviorEvent(data: Partial<BehaviorEventData>) {
-    this.eventBus.emit(EVENTTYPES.BEHAVIOR, this.createBehaviorEvent(BEHAVIOR_TYPES.CLICK, data))
+    this.eventBus.emit(EVENTTYPES.BEHAVIOR, data)
   }
 
   // 获取元素路径
@@ -62,20 +67,58 @@ export class BehaviorMonitor {
     })
   }
 
-  private initPopstate() {}
+  private initPopstate() {
+    window.addEventListener('popstate', () => {
+      const data = this.createBehaviorEvent(BEHAVIOR_TYPES.POPSTATE, {
+        from: document.referrer,
+        to: document.location.href,
+      })
+      this.emitBehaviorEvent(data)
+    })
+  }
 
-  private initHashchange() {}
+  private initHashchange() {
+    window.addEventListener('hashchange', event => {
+      const data = this.createBehaviorEvent(BEHAVIOR_TYPES.HASHCHANGE, {
+        from: event.oldURL,
+        to: event.newURL,
+      })
+      this.emitBehaviorEvent(data)
+    })
+  }
 
-  private initLoad() {}
+  private initTime() {
+    window.addEventListener('load', () => {
+      this.startTime = Date.now()
+    })
 
-  private initBeforeunload() {}
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this.duration += Date.now() - this.startTime
+      } else {
+        this.startTime = Date.now()
+      }
+    })
+  }
+
+  private initBeforeunload() {
+    window.addEventListener('beforeunload', event => {
+      const stayDuration = (Date.now() + this.duration - this.startTime) / 1000
+      const data = this.createBehaviorEvent(BEHAVIOR_TYPES.BEFOREUNLOAD, { stayDuration })
+      this.emitBehaviorEvent(data)
+    })
+  }
 
   private initNetworkStatus() {
-    window.addEventListener('online', event => {
+    window.addEventListener('online', () => {
       this.emitBehaviorEvent(this.createBehaviorEvent(BEHAVIOR_TYPES.ONLINE, {}))
     })
-    window.addEventListener('offline', event => {
+    window.addEventListener('offline', () => {
       this.emitBehaviorEvent(this.createBehaviorEvent(BEHAVIOR_TYPES.OFFLINE, {}))
     })
+  }
+
+  public reportHttpRequest() {
+    this.emitBehaviorEvent(this.createBehaviorEvent(BEHAVIOR_TYPES.HTTP_REQUEST, {}))
   }
 }

@@ -2,7 +2,15 @@ import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
 import request from './request.ts'
-import { Monitor } from '@js-monitor/core/src/lib'
+import { Monitor } from '@web-monitor/core'
+const monitor = new Monitor({
+  reportUrl: 'https://test.cn',
+  enableBehavior: true,
+  enablePerformance: true,
+  enableError: true,
+})
+
+monitor.init()
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <img src="https://test.cn/×××.png">
@@ -34,6 +42,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <button id="replace-state" type="button">history-replaceState</button>
     </div>
     <div class="history-replaceState">
+        <button id="hash-change" type="button">hash-change</button>
+    </div>
+    <div class="history-replaceState">
         <button id="fetch" type="button">fetch请求</button>
     </div>
     <div class="history-replaceState">
@@ -44,15 +55,6 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </p>
   </div>
 `
-
-const monitor = new Monitor({
-  reportUrl: 'https://test.cn',
-  enableBehavior: true,
-  enablePerformance: true,
-  enableError: true,
-})
-
-monitor.init()
 
 // setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
 
@@ -90,6 +92,10 @@ function replaceState() {
   history.replaceState(null, '', '/test-replace-state')
 }
 
+function hashChange() {
+  location.hash = '/test-hash-change'
+}
+
 function fetchRequest() {
   fetch('https://jsonplaceholder.typicode.com/todos/1').then(res => {
     console.log('¬∆¬ fetchRequest', res)
@@ -116,6 +122,7 @@ document
 document.querySelector<HTMLButtonElement>('#push-state')!.addEventListener('click', pushState)
 
 document.querySelector<HTMLButtonElement>('#replace-state')!.addEventListener('click', replaceState)
+document.querySelector<HTMLButtonElement>('#hash-change')!.addEventListener('click', hashChange)
 
 document.querySelector<HTMLButtonElement>('#fetch')!.addEventListener('click', fetchRequest)
 
