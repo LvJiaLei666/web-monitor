@@ -38,7 +38,7 @@ export interface ErrorEventData extends EventBase {
   colno?: number
   tagName?: string
   url?: string
-  responseStatus?: number
+  status?: number
   response?: string
   method?: string
 }
@@ -50,8 +50,8 @@ export interface BehaviorEventData extends EventBase {
   to?: string
   method?: string
   url?: string
-  // 请求状态
-  requestStatus?: number
+  // 状态
+  status?: number
   // 时长
   duration?: number
   // 大小

@@ -18,4 +18,7 @@ export class EventBus {
     const index = handlers.indexOf(handler)
     if (index > -1) handlers.splice(index, 1)
   }
+  public destroy() {
+    this.handlers.clear()
+  }
 }

@@ -4,6 +4,7 @@ import { ErrorMonitor } from './monitor/error'
 import { BehaviorMonitor } from './monitor/behavior'
 import { Reporter } from './reporter/reporter'
 import { ErrorEventData, EVENTTYPES, MonitorEventData } from '../types/event'
+import { HttpMonitor } from './monitor/http'
 
 export class Monitor {
   // 参数
@@ -12,6 +13,7 @@ export class Monitor {
   private errorMonitor: ErrorMonitor
   // private performanceMonitor
   private behaviorMonitor: BehaviorMonitor
+  private httpMonitor: HttpMonitor
   private reporter: Reporter
 
   eventBus: EventBus = new EventBus()
@@ -19,6 +21,7 @@ export class Monitor {
     this.options = options
     this.errorMonitor = new ErrorMonitor(this.eventBus)
     this.behaviorMonitor = new BehaviorMonitor(this.eventBus)
+    this.httpMonitor = new HttpMonitor(this.eventBus)
     this.reporter = new Reporter(this.options.reportUrl)
   }
 
@@ -27,6 +30,7 @@ export class Monitor {
     this.initBehavior()
     this.initPerformance()
     this.initReport()
+    this.initHttp()
   }
 
   private initError() {
@@ -57,5 +61,11 @@ export class Monitor {
     this.eventBus.on(EVENTTYPES.BEHAVIOR, (data: MonitorEventData) =>
       handleReport(EVENTTYPES.BEHAVIOR, data)
     )
+  }
+
+  private initHttp() {
+    if (this.options.enableError || this.options.enableBehavior) {
+      this.httpMonitor.init()
+    }
   }
 }
