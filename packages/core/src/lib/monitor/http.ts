@@ -112,13 +112,107 @@ export class HttpMonitor {
                 url: requestData.url,
                 response: this.response,
                 status,
+                message: `HTTP ${status} Error: ${this.statusText || 'Unknown Error'}`,
               })
             )
           }
         })
+
+        // 监听网络错误
+        this.addEventListener('error', function () {
+          eventBus.emit(
+            EVENTTYPES.ERROR,
+            createHttpErrorEventData({
+              method: requestData.method,
+              url: requestData.url,
+              status: 0,
+              message: `Network Error`,
+            })
+          )
+        })
+
+        // 监听超时
+        this.addEventListener('timeout', function () {
+          eventBus.emit(
+            EVENTTYPES.ERROR,
+            createHttpErrorEventData({
+              method: requestData.method,
+              url: requestData.url,
+              status: 0,
+              message: `Request Timeout ${this.timeout}ms`,
+            })
+          )
+        })
       }
+
       originalSend.call(this, body)
     }
   }
-  initFetch() {}
+  initFetch() {
+    const originalFetch = window.fetch
+    const eventBus = this.eventBus
+    const createHttpBehaviorEventData = this.createHttpBehaviorEventData
+    const createHttpErrorEventData = this.createHttpErrorEventData
+
+    window.fetch = async function (
+      input: RequestInfo | URL,
+      init?: RequestInit
+    ): Promise<Response> {
+      const startTime = Date.now()
+      const method = init?.method || 'GET'
+      const url = input instanceof Request ? input.url : input.toString()
+      const requestSize = JSON.stringify(init?.body || '')?.length || 0
+
+      try {
+        const response = await originalFetch(input, init)
+        const endTime = Date.now()
+        const duration = endTime - startTime
+        const responseClone = response.clone()
+        const responseText = await responseClone.text()
+        const responseSize = responseText.length
+
+        // 上报请求行为
+        eventBus.emit(
+          EVENTTYPES.BEHAVIOR,
+          createHttpBehaviorEventData({
+            method,
+            url,
+            duration,
+            requestSize,
+            status: response.status,
+            responseSize,
+          })
+        )
+
+        // 处理错误情况
+        if (!response.ok) {
+          eventBus.emit(
+            EVENTTYPES.ERROR,
+            createHttpErrorEventData({
+              method,
+              url,
+              response: responseText,
+              status: response.status,
+              message: `HTTP ${response.status} Error: ${response.statusText || 'Unknown Error'}`,
+            })
+          )
+        }
+
+        return response
+      } catch (error) {
+        // 处理网络错误
+        eventBus.emit(
+          EVENTTYPES.ERROR,
+          createHttpErrorEventData({
+            method,
+            url,
+            status: 0,
+            message: error instanceof Error ? error.message : `Network Error`,
+            stack: error instanceof Error ? error.stack : undefined,
+          })
+        )
+        throw error
+      }
+    }
+  }
 }
