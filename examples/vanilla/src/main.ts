@@ -71,9 +71,9 @@ function triggerPromiseError() {
 window.addEventListener(
   'error',
   e => {
-    console.log('¬∆¬ window.addEventListener', e)
+    // console.log('¬∆¬ window.addEventListener', e)
     if (e.target instanceof HTMLImageElement) {
-      console.log('¬∆¬ ')
+      // console.log('¬∆¬ ')
     }
   },
   true
@@ -97,16 +97,12 @@ function hashChange() {
 }
 
 function fetchRequest() {
-  fetch('https://jsonplaceholder.typicode.com/todos/1').then(res => {
-    console.log('¬∆¬ fetchRequest', res)
-  })
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
 }
 
 function xhrRequest() {
   request({
     url: 'https://jsonplaceholder.typicode.com/todos/1',
-  }).then(res => {
-    console.log('¬∆¬ xhrRequest', res)
   })
 }
 
@@ -128,4 +124,4 @@ document.querySelector<HTMLButtonElement>('#fetch')!.addEventListener('click', f
 
 document.querySelector<HTMLButtonElement>('#xhr')!.addEventListener('click', xhrRequest)
 
-console.error('test console error')
+// console.error('test console error')

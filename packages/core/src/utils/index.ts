@@ -118,3 +118,21 @@ export function debounce(func: AnyFun, wait: number, runFirst = false) {
     }, wait)
   }
 }
+
+// 获取元素路径
+export function getElementPath(element: HTMLElement): string {
+  const path: string[] = []
+  let current: HTMLElement | null = element
+
+  while (current) {
+    const tag = current.tagName.toLowerCase()
+    const id = current.id ? `#${current.id}` : ''
+    const classes = Array.from(current.classList)
+      .map(c => `.${c}`)
+      .join('')
+    path.unshift(`${tag}${id}${classes}`)
+    current = current.parentElement
+  }
+
+  return path.join(' > ')
+}

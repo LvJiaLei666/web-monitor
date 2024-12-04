@@ -85,11 +85,6 @@ export class HttpMonitor {
           const status = this.status
           const responseSize = this.response?.length || 0
           const requestSize = JSON.stringify(body || '')?.length || 0
-          console.log('¬∆¬ loadend duration', duration)
-          console.log('¬∆¬ loadend responseSize', responseSize)
-          console.log('¬∆¬ loadend requestStatus', status)
-          console.log('¬∆¬ loadend requestSize', requestSize)
-          console.log('¬∆¬ loadend this', this)
           // 上报请求行为
           eventBus.emit(
             EVENTTYPES.BEHAVIOR,

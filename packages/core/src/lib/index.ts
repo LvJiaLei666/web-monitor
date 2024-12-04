@@ -15,7 +15,7 @@ import { PerformanceMonitor } from './monitor/performance'
 
 export class Monitor {
   // 参数
-  private options: InitOptions
+  private readonly options: InitOptions
   // private plugins = new Map()
   private errorMonitor: ErrorMonitor
   private performanceMonitor: PerformanceMonitor
@@ -30,7 +30,7 @@ export class Monitor {
     this.behaviorMonitor = new BehaviorMonitor(this.eventBus)
     this.httpMonitor = new HttpMonitor(this.eventBus)
     this.performanceMonitor = new PerformanceMonitor(this.eventBus)
-    this.reporter = new Reporter(this.options.reportUrl)
+    this.reporter = new Reporter(this.options)
   }
 
   init() {

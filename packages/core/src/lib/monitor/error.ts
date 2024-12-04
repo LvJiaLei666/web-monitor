@@ -1,5 +1,6 @@
 import { EventBus } from '../../utils/eventBus'
 import { ERROR_TYPES, ErrorEventData, EVENTTYPES } from '../../types/event'
+import { getElementPath } from '../../utils'
 
 export class ErrorMonitor {
   constructor(private eventBus: EventBus) {}
@@ -67,12 +68,22 @@ export class ErrorMonitor {
     window.addEventListener(
       'error',
       event => {
+        // 判断事件的目标是否是资源（图片、脚本、CSS等）
         const target = event.target as HTMLElement
+        const isResourceError = [
+          event.target instanceof HTMLImageElement,
+          event.target instanceof HTMLScriptElement,
+          event.target instanceof HTMLLinkElement,
+        ].some(Boolean)
+
+        if (!isResourceError) return
+
         const data = this.createErrorEvent(ERROR_TYPES.RESOURCE_ERROR, {
           tagName: target?.tagName,
           url:
             (target as HTMLImageElement | HTMLScriptElement)?.src ||
             (target as HTMLLinkElement)?.href,
+          path: getElementPath(target),
         })
 
         this.emitErrorEvent(data)

@@ -49,6 +49,7 @@ export interface ErrorEventData extends EventBase {
   status?: number
   response?: string
   method?: string
+  path?: string
 }
 
 export interface BehaviorEventData extends EventBase {
