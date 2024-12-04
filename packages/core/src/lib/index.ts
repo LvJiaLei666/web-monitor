@@ -3,15 +3,22 @@ import { EventBus } from '../utils/eventBus'
 import { ErrorMonitor } from './monitor/error'
 import { BehaviorMonitor } from './monitor/behavior'
 import { Reporter } from './reporter/reporter'
-import { ErrorEventData, EVENTTYPES, MonitorEventData } from '../types/event'
+import {
+  BehaviorEventData,
+  ErrorEventData,
+  EVENTTYPES,
+  MonitorEventData,
+  PerformanceEventData,
+} from '../types/event'
 import { HttpMonitor } from './monitor/http'
+import { PerformanceMonitor } from './monitor/performance'
 
 export class Monitor {
   // 参数
   private options: InitOptions
   // private plugins = new Map()
   private errorMonitor: ErrorMonitor
-  // private performanceMonitor
+  private performanceMonitor: PerformanceMonitor
   private behaviorMonitor: BehaviorMonitor
   private httpMonitor: HttpMonitor
   private reporter: Reporter
@@ -22,6 +29,7 @@ export class Monitor {
     this.errorMonitor = new ErrorMonitor(this.eventBus)
     this.behaviorMonitor = new BehaviorMonitor(this.eventBus)
     this.httpMonitor = new HttpMonitor(this.eventBus)
+    this.performanceMonitor = new PerformanceMonitor(this.eventBus)
     this.reporter = new Reporter(this.options.reportUrl)
   }
 
@@ -41,6 +49,7 @@ export class Monitor {
 
   private initPerformance() {
     if (this.options.enablePerformance) {
+      this.performanceMonitor.init()
     }
   }
 
@@ -58,8 +67,12 @@ export class Monitor {
       handleReport(EVENTTYPES.ERROR, data)
     )
 
-    this.eventBus.on(EVENTTYPES.BEHAVIOR, (data: MonitorEventData) =>
+    this.eventBus.on(EVENTTYPES.BEHAVIOR, (data: BehaviorEventData) =>
       handleReport(EVENTTYPES.BEHAVIOR, data)
+    )
+
+    this.eventBus.on(EVENTTYPES.PERFORMANCE, (data: PerformanceEventData) =>
+      handleReport(EVENTTYPES.PERFORMANCE, data)
     )
   }
 

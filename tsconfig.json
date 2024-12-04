@@ -32,6 +32,6 @@
   "baseUrl": "./",
   "paths": {
     "*": ["src/*", "node_modules/*"],
-    "@js-monitor/*":["packages/"],
+    "@web-monitor/*":["packages/"],
   }
 }

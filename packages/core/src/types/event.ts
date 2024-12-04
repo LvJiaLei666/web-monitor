@@ -22,6 +22,14 @@ export enum BEHAVIOR_TYPES {
   BEFOREUNLOAD = 'beforeunload',
 }
 
+export enum PERFORMANCE_TYPES {
+  TIMING = 'timing',
+  PAINT = 'paint',
+  LCP = 'lcp',
+  FID = 'fid',
+  RESOURCE = 'resource',
+}
+
 export interface EventBase {
   type: string
   timestamp: number
@@ -66,4 +74,19 @@ export interface BehaviorEventData extends EventBase {
   stayDuration?: number
 }
 
-export type MonitorEventData = ErrorEventData | BehaviorEventData
+export interface PerformanceEventData extends EventBase {
+  type: PERFORMANCE_TYPES
+  metrics?: {
+    dns: number
+    tcp: number
+    ttfb: number
+    domParse: number
+    domReady: number
+    load: number
+  }
+  name?: string
+  startTime?: number
+  value?: number
+}
+
+export type MonitorEventData = ErrorEventData | BehaviorEventData | PerformanceEventData
