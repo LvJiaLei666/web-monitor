@@ -1,7 +1,7 @@
 {
   "name": "web-monitor",
   "version": "1.0.0",
-  "description": "",
+  "description": "前端监控SDK，可收集并上报：代码报错、行为数据、性能数据等个性化指标...",
   "scripts": {
     "prepare": "husky install"
   },
@@ -11,7 +11,16 @@
       "eslint --fix"
     ]
   },
-  "keywords": [],
+  "keywords": [
+    "web monitor",
+    "埋点",
+    "性能",
+    "异常",
+    "性能采集",
+    "异常采集",
+    "前端埋点",
+    "前端性能采集"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
