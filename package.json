@@ -5,6 +5,12 @@
   "scripts": {
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "**/*.{ts,tsx,json}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",
