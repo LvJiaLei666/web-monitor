@@ -90,4 +90,8 @@ export interface PerformanceEventData extends EventBase {
   value?: number
 }
 
-export type MonitorEventData = ErrorEventData | BehaviorEventData | PerformanceEventData
+export type MonitorEventData =
+  | { eventType?: EVENTTYPES }
+  | ErrorEventData
+  | BehaviorEventData
+  | PerformanceEventData

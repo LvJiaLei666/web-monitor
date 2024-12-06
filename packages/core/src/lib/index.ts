@@ -60,7 +60,7 @@ export class Monitor {
   }
   private initReport() {
     const handleReport = (type: EVENTTYPES, data: MonitorEventData) => {
-      this.reporter.send(data)
+      this.reporter.send(type, data)
     }
 
     this.eventBus.on(EVENTTYPES.ERROR, (data: ErrorEventData) =>

@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web-monitor/core": "workspace:*"
+    "@web-monitor/core": "workspace:*",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "typescript": "^5.5.3",

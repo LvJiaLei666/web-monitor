@@ -4,7 +4,8 @@ import viteLogo from '/vite.svg'
 import request from './request.ts'
 import { Monitor } from '@web-monitor/core'
 const monitor = new Monitor({
-  reportUrl: 'https://test.cn',
+  useImageUpload: false,
+  reportUrl: 'http://localhost:3000/report',
   enableBehavior: true,
   enablePerformance: true,
   enableError: true,
