@@ -1,4 +1,4 @@
-import { EventBus } from '../../utils/eventBus'
+import { EventBus } from '@web-monitor/core/src/utils/eventBus.ts'
 import { BEHAVIOR_TYPES, BehaviorEventData, EVENTTYPES } from '../../types/event'
 import { getElementPath } from '../../utils'
 
@@ -85,7 +85,7 @@ export class BehaviorMonitor {
   }
 
   private initBeforeunload() {
-    window.addEventListener('beforeunload', event => {
+    window.addEventListener('beforeunload', () => {
       const stayDuration = (Date.now() + this.duration - this.startTime) / 1000
       const data = this.createBehaviorEvent(BEHAVIOR_TYPES.BEFOREUNLOAD, { stayDuration })
       this.emitBehaviorEvent(data)
