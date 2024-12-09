@@ -3,6 +3,7 @@ import { InitOptions } from '../../types/options'
 export class Reporter {
   constructor(private options: InitOptions) {}
   private sendBeaconReport(data: MonitorEventData) {
+    console.log('¬∆¬ sendBeaconReport', JSON.stringify(data))
     navigator.sendBeacon(this.options.reportUrl, JSON.stringify(data))
   }
   private sendImageReport(data: MonitorEventData) {

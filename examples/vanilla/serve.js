@@ -1,20 +1,16 @@
 import express from 'express'
+import cors from 'cors'
 const app = express()
 const port = 3000
 
-// app.get('/', (req, res) => {
-//   res.send('Hello World!')
-// })
-app.all('*', function (res, req, next) {
-  req.header('Access-Control-Allow-Origin', '*')
-  req.header('Access-Control-Allow-Headers', 'Content-Type')
-  req.header('Access-Control-Allow-Methods', '*')
-  req.header('Content-Type', 'application/json;charset=utf-8')
-  next()
-})
+app.use(cors())
+// 解析 text/plain 请求体
+app.use(express.text({ type: 'text/plain' }))
 
 app.post('/report', (req, res) => {
-  console.log(req)
+  const data = JSON.parse(req.body) // 将文本数据解析为 JSON 对象
+  // console.log(req)
+  console.log('¬∆¬ data', data)
   res.send('Hello World!')
 })
 

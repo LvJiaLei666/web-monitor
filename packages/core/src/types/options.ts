@@ -7,6 +7,8 @@ export interface InitOptions {
   useImageUpload: boolean
   // 上报方式 默认使用sendBeacon 如不兼容逐步降级至img 最后是xhr
   // customReportType?: 'sendBeacon' | 'img' | 'fetch' | 'xhr'
+  // 忽略监控与上报的url列表
+  ignoreUrls?: (string | RegExp)[]
   appId?: string
   userId?: string
   // 采样率
@@ -19,8 +21,21 @@ export interface InitOptions {
   enableBehavior?: boolean
 }
 
-export interface MonitorEvent {
-  timestamp: number
-  type: 'error' | 'performance' | 'behavior'
-  data: any
+export const defaultOptions: InitOptions = {
+  reportUrl: '',
+  ignoreUrls: [],
+  appId: '',
+  userId: '',
+  sampleRate: 1,
+  enableError: false,
+  enablePerformance: false,
+  enableBehavior: false,
+  useImageUpload: false,
+}
+
+// 检查配置项
+export function checkOptions(options: InitOptions) {
+  if (!options.reportUrl) {
+    throw new Error('web-monitor : reportUrl is required')
+  }
 }

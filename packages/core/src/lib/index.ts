@@ -1,4 +1,4 @@
-import { InitOptions } from '../types/options'
+import { checkOptions, defaultOptions, InitOptions } from '../types/options'
 import { EventBus } from '../utils/eventBus'
 import { ErrorMonitor } from './monitor/error'
 import { BehaviorMonitor } from './monitor/behavior'
@@ -25,10 +25,16 @@ export class Monitor {
 
   eventBus: EventBus = new EventBus()
   constructor(options: InitOptions) {
-    this.options = options
+    this.options = { ...defaultOptions, ...options }
+    checkOptions(this.options)
+
     this.errorMonitor = new ErrorMonitor(this.eventBus)
     this.behaviorMonitor = new BehaviorMonitor(this.eventBus)
-    this.httpMonitor = new HttpMonitor(this.eventBus)
+    this.httpMonitor = new HttpMonitor(
+      this.eventBus,
+      this.options.ignoreUrls || [],
+      this.options.reportUrl
+    )
     this.performanceMonitor = new PerformanceMonitor(this.eventBus)
     this.reporter = new Reporter(this.options)
   }

@@ -6,6 +6,7 @@ import { Monitor } from '@web-monitor/core'
 const monitor = new Monitor({
   useImageUpload: false,
   reportUrl: 'http://localhost:3000/report',
+  ignoreUrls: ['jsonplaceholder.typicode.com'],
   enableBehavior: true,
   enablePerformance: true,
   enableError: true,
