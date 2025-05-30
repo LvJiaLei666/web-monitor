@@ -10,7 +10,7 @@
     "serve": "nodemon serve.js"
   },
   "dependencies": {
-    "@web-watchtower/core": "workspace:*",
+    "@web-monitor/core": "workspace:*",
     "express": "^4.19.2",
     "cors": "^2.8.5"
   },

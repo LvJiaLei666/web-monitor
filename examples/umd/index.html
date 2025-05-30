@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Monitor UMD Demo</title>
+  <script src="../../dist/web-monitor.umd.js"></script>
+</head>
+<body>
+  <h1>Web Monitor UMD Demo</h1>
+  <button onclick="throwError()">抛出错误</button>
+  <script>
+    const monitor = new WebMonitor.Monitor({
+      reportUrl: 'http://localhost:3000/report',
+      enableBehavior: true,
+      enablePerformance: true,
+      enableError: true,
+      ignoreUrls: [
+        /\.(png|jpg|gif)$/,
+        'analytics.com'
+      ]
+    })
+
+    monitor.init()
+
+    function throwError() {
+      throw new Error('测试错误')
+    }
+  </script>
+</body>
+</html> 

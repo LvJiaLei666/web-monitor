@@ -20,6 +20,7 @@
     "declarationDir": "./dist/types",
     "emitDeclarationOnly": true,
     "rootDir": "./packages",
+    "baseUrl": ".",
     "paths": {
       "@web-monitor/*": ["packages/*"]
     }

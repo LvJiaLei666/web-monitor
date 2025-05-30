@@ -1,5 +1,5 @@
 {
-  "name": "web-watchtower",
+  "name": "web-monitor",
   "version": "1.0.0",
   "description": "前端监控SDK，可收集并上报：代码报错、行为数据、性能数据等个性化指标...",
   "keywords": [

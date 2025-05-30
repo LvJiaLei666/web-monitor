@@ -2,7 +2,7 @@ import './style.css'
 import typescriptLogo from './typescript.svg'
 import viteLogo from '/vite.svg'
 import request from './request.ts'
-import { Monitor } from '@web-watchtower/core'
+import { Monitor } from '@web-monitor/core'
 const monitor = new Monitor({
   useImageUpload: false,
   reportUrl: 'http://localhost:3000/report',

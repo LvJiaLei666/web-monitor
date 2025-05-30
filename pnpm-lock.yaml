@@ -59,7 +59,7 @@ importers:
 
   examples/vanilla:
     dependencies:
-      '@web-watchtower/core':
+      '@web-monitor/core':
         specifier: workspace:*
         version: link:../../packages/core
       cors:

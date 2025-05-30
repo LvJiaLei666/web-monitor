@@ -1,5 +1,5 @@
 {
-  "name": "@web-watchtower/core",
+  "name": "@web-monitor/core",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
