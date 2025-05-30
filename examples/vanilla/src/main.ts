@@ -14,6 +14,13 @@ const monitor = new Monitor({
 
 monitor.init()
 
+monitor.use({
+  name: 'test',
+  init: monitor => {
+    console.log('test plugin init', monitor)
+  },
+})
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 <img src="https://test.cn/×××.png">
 

@@ -13,10 +13,20 @@ import {
 import { HttpMonitor } from './monitor/http'
 import { PerformanceMonitor } from './monitor/performance'
 
+// 插件接口定义
+export interface Plugin {
+  name: string
+  init?(monitor: Monitor): void
+  onEvent?(eventType: EVENTTYPES, data: MonitorEventData): void
+  beforeSend?(data: MonitorEventData): MonitorEventData | false
+  afterSend?(data: MonitorEventData): void
+  destroy?(): void
+}
+
 export class Monitor {
   // 参数
   private readonly options: InitOptions
-  // private plugins = new Map()
+  private plugins = new Map<string, Plugin>()
   private errorMonitor: ErrorMonitor
   private performanceMonitor: PerformanceMonitor
   private behaviorMonitor: BehaviorMonitor
@@ -37,6 +47,25 @@ export class Monitor {
     )
     this.performanceMonitor = new PerformanceMonitor(this.eventBus)
     this.reporter = new Reporter(this.options)
+  }
+
+  // 使用插件
+  use(plugin: Plugin) {
+    if (this.plugins.has(plugin.name)) {
+      console.warn(`Plugin ${plugin.name} has already been registered`)
+      return
+    }
+    this.plugins.set(plugin.name, plugin)
+    plugin.init?.(this)
+  }
+
+  // 移除插件
+  unuse(pluginName: string) {
+    const plugin = this.plugins.get(pluginName)
+    if (plugin) {
+      plugin.destroy?.()
+      this.plugins.delete(pluginName)
+    }
   }
 
   init() {
@@ -64,9 +93,33 @@ export class Monitor {
       this.behaviorMonitor.init()
     }
   }
+
   private initReport() {
     const handleReport = (type: EVENTTYPES, data: MonitorEventData) => {
-      this.reporter.send(type, data)
+      // 触发插件的事件处理
+      this.plugins.forEach(plugin => {
+        plugin.onEvent?.(type, data)
+      })
+
+      // 数据发送前处理
+      let processedData = data
+      for (const plugin of this.plugins.values()) {
+        const result = plugin.beforeSend?.(processedData)
+        if (result === false) {
+          return // 如果插件返回 false，则不上报数据
+        }
+        if (result) {
+          processedData = result
+        }
+      }
+
+      // 发送数据
+      this.reporter.send(type, processedData)
+
+      // 数据发送后处理
+      this.plugins.forEach(plugin => {
+        plugin.afterSend?.(processedData)
+      })
     }
 
     this.eventBus.on(EVENTTYPES.ERROR, (data: ErrorEventData) =>
@@ -86,5 +139,14 @@ export class Monitor {
     if (this.options.enableError || this.options.enableBehavior) {
       this.httpMonitor.init()
     }
+  }
+
+  // 销毁实例
+  destroy() {
+    this.plugins.forEach(plugin => {
+      plugin.destroy?.()
+    })
+    this.plugins.clear()
+    this.eventBus.destroy()
   }
 }
