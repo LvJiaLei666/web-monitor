@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Size](https://img.shields.io/badge/size-10KB-brightgreen.svg)
 
-一个轻量级的前端监控 SDK，采用 OOP 与 FP 相结合的方式实现，支持错误监控、性能监控和用户行为监控。
+一个轻量级的前端监控 SDK，支持错误监控、性能监控和用户行为监控。
 
 [特性](#特性) • [安装](#安装) • [快速开始](#快速开始) • [监控类型](#监控类型) • [插件系统](#插件系统) • [注意事项](#注意事项)
 
