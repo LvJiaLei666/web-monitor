@@ -13,20 +13,38 @@ import {
 import { HttpMonitor } from './monitor/http'
 import { PerformanceMonitor } from './monitor/performance'
 
+// 插件优先级
+export enum PluginPriority {
+  HIGHEST = 0,
+  HIGH = 1,
+  NORMAL = 2,
+  LOW = 3,
+  LOWEST = 4,
+}
+
 // 插件接口定义
 export interface Plugin {
   name: string
+  priority?: PluginPriority
+  enabled?: boolean
   init?(monitor: Monitor): void
   onEvent?(eventType: EVENTTYPES, data: MonitorEventData): void
-  beforeSend?(data: MonitorEventData): MonitorEventData | false
+  beforeSend?(data: MonitorEventData): MonitorEventData | false | Promise<MonitorEventData | false>
   afterSend?(data: MonitorEventData): void
   destroy?(): void
+}
+
+// 插件配置接口
+export interface PluginConfig {
+  enabled?: boolean
+  [key: string]: any
 }
 
 export class Monitor {
   // 参数
   private readonly options: InitOptions
   private plugins = new Map<string, Plugin>()
+  private pluginConfigs = new Map<string, PluginConfig>()
   private errorMonitor: ErrorMonitor
   private performanceMonitor: PerformanceMonitor
   private behaviorMonitor: BehaviorMonitor
@@ -34,6 +52,7 @@ export class Monitor {
   private reporter: Reporter
 
   eventBus: EventBus = new EventBus()
+
   constructor(options: InitOptions) {
     this.options = { ...defaultOptions, ...options }
     checkOptions(this.options)
@@ -50,13 +69,28 @@ export class Monitor {
   }
 
   // 使用插件
-  use(plugin: Plugin) {
+  use(plugin: Plugin, config?: PluginConfig) {
     if (this.plugins.has(plugin.name)) {
       console.warn(`Plugin ${plugin.name} has already been registered`)
-      return
+      return this
     }
+
+    // 设置默认优先级和启用状态
+    plugin.priority = plugin.priority ?? PluginPriority.NORMAL
+    plugin.enabled = config?.enabled ?? true
+
+    // 保存插件配置
+    if (config) {
+      this.pluginConfigs.set(plugin.name, config)
+    }
+
     this.plugins.set(plugin.name, plugin)
-    plugin.init?.(this)
+
+    if (plugin.enabled) {
+      plugin.init?.(this)
+    }
+
+    return this // 支持链式调用
   }
 
   // 移除插件
@@ -65,7 +99,40 @@ export class Monitor {
     if (plugin) {
       plugin.destroy?.()
       this.plugins.delete(pluginName)
+      this.pluginConfigs.delete(pluginName)
     }
+    return this
+  }
+
+  // 启用插件
+  enablePlugin(pluginName: string) {
+    const plugin = this.plugins.get(pluginName)
+    if (plugin && !plugin.enabled) {
+      plugin.enabled = true
+      plugin.init?.(this)
+    }
+    return this
+  }
+
+  // 禁用插件
+  disablePlugin(pluginName: string) {
+    const plugin = this.plugins.get(pluginName)
+    if (plugin && plugin.enabled) {
+      plugin.enabled = false
+      plugin.destroy?.()
+    }
+    return this
+  }
+
+  // 获取插件配置
+  getPluginConfig<T extends PluginConfig>(pluginName: string): T | undefined {
+    return this.pluginConfigs.get(pluginName) as T
+  }
+
+  // 设置插件配置
+  setPluginConfig(pluginName: string, config: PluginConfig) {
+    this.pluginConfigs.set(pluginName, config)
+    return this
   }
 
   init() {
@@ -95,31 +162,44 @@ export class Monitor {
   }
 
   private initReport() {
-    const handleReport = (type: EVENTTYPES, data: MonitorEventData) => {
-      // 触发插件的事件处理
-      this.plugins.forEach(plugin => {
-        plugin.onEvent?.(type, data)
-      })
+    const handleReport = async (type: EVENTTYPES, data: MonitorEventData) => {
+      try {
+        // 获取已启用的插件并按优先级排序
+        const enabledPlugins = Array.from(this.plugins.values())
+          .filter(p => p.enabled)
+          .sort(
+            (a, b) => (a.priority ?? PluginPriority.NORMAL) - (b.priority ?? PluginPriority.NORMAL)
+          )
 
-      // 数据发送前处理
-      let processedData = data
-      for (const plugin of this.plugins.values()) {
-        const result = plugin.beforeSend?.(processedData)
-        if (result === false) {
-          return // 如果插件返回 false，则不上报数据
+        // 触发插件的事件处理
+        enabledPlugins.forEach(plugin => {
+          plugin.onEvent?.(type, data)
+        })
+
+        // 数据发送前处理
+        let processedData = data
+        for (const plugin of enabledPlugins) {
+          if (!plugin.beforeSend) continue
+
+          const result = await Promise.resolve(plugin.beforeSend(processedData))
+          if (result === false) {
+            return // 如果插件返回 false，则不上报数据
+          }
+          if (result) {
+            processedData = result
+          }
         }
-        if (result) {
-          processedData = result
-        }
+
+        // 发送数据
+        await this.reporter.send(type, processedData)
+
+        // 数据发送后处理
+        enabledPlugins.forEach(plugin => {
+          plugin.afterSend?.(processedData)
+        })
+      } catch (error) {
+        console.error('Error in handleReport:', error)
       }
-
-      // 发送数据
-      this.reporter.send(type, processedData)
-
-      // 数据发送后处理
-      this.plugins.forEach(plugin => {
-        plugin.afterSend?.(processedData)
-      })
     }
 
     this.eventBus.on(EVENTTYPES.ERROR, (data: ErrorEventData) =>
@@ -144,9 +224,12 @@ export class Monitor {
   // 销毁实例
   destroy() {
     this.plugins.forEach(plugin => {
-      plugin.destroy?.()
+      if (plugin.enabled) {
+        plugin.destroy?.()
+      }
     })
     this.plugins.clear()
+    this.pluginConfigs.clear()
     this.eventBus.destroy()
   }
 }
